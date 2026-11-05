@@ -4,7 +4,7 @@
 
 int main(int argc, char* argv[]) {
     if (argc==2 && strcmp("author", argv[1])==0){
-      printf("Auteur: <votre nom ici>\n");
+      printf("Auteur: DANTEC LEAL Luca\n");
       return 255; 
     }
     char** mots = &argv[1];  //tous les paramètres passés sauf le premier
