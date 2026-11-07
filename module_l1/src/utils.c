@@ -14,7 +14,7 @@ int dec_auteur(int argc, char* argv[]){
 }
 
 /* Renvoie l'entier demandé s'il est entre 1 et 100 */ 
-int lire_entier(char* nb) {
+int lire_entier(const char* nb) {
     int val = 0;
     if ( nb[0] == '\0' ) return -1;
     for ( int i = 0 ; nb[i] != '\0' ; i++ ){
