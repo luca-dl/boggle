@@ -1,0 +1,7 @@
+# Fichiers générés par la compilation
+*.o
+*.exe
+*.lex
+obj/
+bin/
+essai*
