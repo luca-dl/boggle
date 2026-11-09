@@ -147,7 +147,7 @@ static int add_cellule(Arbre* arbre, char lettre) {
 }
 
 /* Trouve une lettre précise ( si elle existe ) avec l'indice du premier frère */
-static int find_cellule( const Arbre* arbre, int indice, char lettre) {
+int find_cellule( const Arbre* arbre, int indice, char lettre) {
     /* Vérification des paramètres. */
     if (arbre == NULL || arbre->cellule == NULL) return NO_INDEX;
 

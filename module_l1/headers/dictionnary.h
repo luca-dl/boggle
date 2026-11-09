@@ -30,6 +30,8 @@ int arbre_init(Arbre* arbre);
 
 void arbre_free(Arbre* arbre);
 
+int find_cellule(const Arbre* arbre, int indice, char lettre);
+
 int arbre_insert(Arbre* arbre, const char* mot);
 
 int arbre_find(const Arbre* arbre, const char* mot);
