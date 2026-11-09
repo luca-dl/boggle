@@ -2,7 +2,7 @@
 *.o
 *.exe
 *.lex
-obj/
-bin/
+module_l1/bin/
+module_l1/obj/
 essai*
 data/
