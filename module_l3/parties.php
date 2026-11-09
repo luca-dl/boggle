@@ -2,14 +2,34 @@
 require 'config.php';
 exiger_connexion();
 
-// Données fictives (attendu de la séance)
+// Données fictives (attendu de la séance) : seront remplacées par la base de données
 $parties = [
-    ['date' => '08/11/2026 18:42', 'joueurs' => 3, 'mots' => 27,  'score' => 41,  'statut' => 'Terminée'],
-    ['date' => '07/11/2026 21:15', 'joueurs' => 2, 'mots' => 19,  'score' => 28,  'statut' => 'Terminée'],
-    ['date' => '06/11/2026 12:03', 'joueurs' => 4, 'mots' => 33,  'score' => 52,  'statut' => 'Terminée'],
-    ['date' => '—',                'joueurs' => 2, 'mots' => '—', 'score' => '—', 'statut' => 'En attente'],
+    1 => ['date' => '08/11/2026 18:42', 'joueurs' => 3, 'mots' => 27,  'score' => 41,  'statut' => 'Terminée'],
+    2 => ['date' => '07/11/2026 21:15', 'joueurs' => 2, 'mots' => 19,  'score' => 28,  'statut' => 'Terminée'],
+    3 => ['date' => '06/11/2026 12:03', 'joueurs' => 4, 'mots' => 33,  'score' => 52,  'statut' => 'Terminée'],
+    4 => ['date' => '—',                'joueurs' => 2, 'mots' => '—', 'score' => '—', 'statut' => 'En attente'],
 ];
-$info = isset($_GET['nouvelle']) ? '🚧 La création de partie arrive bientôt !' : '';
+
+$info = '';
+$selection = null;
+
+if (isset($_GET['nouvelle'])) {
+    $info = '🚧 La création de partie arrive bientôt !';
+}
+
+// Clic sur un bouton de partie : l'id doit être un entier qui correspond à une partie existante
+$id = filter_input(INPUT_GET, 'partie', FILTER_VALIDATE_INT);
+if ($id !== null && $id !== false) {
+    if (isset($parties[$id])) {
+        $selection = $id;
+        $info = $parties[$id]['statut'] === 'Terminée'
+            ? "👁 Résultats de la partie n°{$id} : {$parties[$id]['score']} points (fictif)"
+            : "▶ Lancement de la partie n°{$id}… Le jeu arrive bientôt ! (fictif)";
+
+    } else {
+        $info = '❌ Partie introuvable.';
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -43,16 +63,24 @@ $info = isset($_GET['nouvelle']) ? '🚧 La création de partie arrive bientôt 
   <div class="tableau">
     <table>
       <thead>
-        <tr><th>Date</th><th>Joueurs</th><th>Mots trouvés</th><th>Score</th><th>Statut</th></tr>
+        <tr><th>Date</th><th>Joueurs</th><th>Mots trouvés</th><th>Score</th><th>Statut</th><th>Action</th></tr>
       </thead>
       <tbody>
-        <?php foreach ($parties as $p): ?>
-          <tr>
+        <?php foreach ($parties as $id => $p): ?>
+          <?php $terminee = $p['statut'] === 'Terminée'; ?>
+          <tr class="<?= $selection === $id ? 'selection' : '' ?>">
             <td><?= e($p['date']) ?></td>
             <td><?= e($p['joueurs']) ?></td>
             <td><?= e($p['mots']) ?></td>
             <td><strong><?= e($p['score']) ?></strong></td>
-            <td><span class="badge <?= $p['statut'] === 'Terminée' ? 'ok' : 'attente' ?>"><?= e($p['statut']) ?></span></td>
+            <td><span class="badge <?= $terminee ? 'ok' : 'attente' ?>"><?= e($p['statut']) ?></span></td>
+            <td>
+              <?php if ($terminee): ?>
+                <a class="btn btn-petit" href="?partie=<?= (int) $id ?>">👁 Voir</a>
+              <?php else: ?>
+                <a class="btn btn-petit btn-jouer" href="?partie=<?= (int) $id ?>">▶ Jouer</a>
+              <?php endif; ?>
+            </td>
           </tr>
         <?php endforeach; ?>
       </tbody>

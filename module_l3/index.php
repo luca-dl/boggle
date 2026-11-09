@@ -90,10 +90,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $succes = 'Si un compte existe avec cet e-mail, un lien de réinitialisation a été envoyé.';
     }
 }
-
-// Grille de démonstration : le mot « JOUER » est surligné
-$lettres = str_split('JOUESATRMINEBLOC');
-$chemin = [0, 1, 2, 3, 7];
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -104,87 +100,67 @@ $chemin = [0, 1, 2, 3, 7];
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="accueil">
+<main class="carte">
+  <h1 class="logo"><span>B</span><span>O</span><span>G</span><span>G</span><span>L</span><span>E</span></h1>
+  <p class="slogan">🎲 Trouvez un MAX de mots !</p>
 
-  <section class="presentation">
-    <h1 class="logo"><span>B</span><span>O</span><span>G</span><span>G</span><span>L</span><span>E</span></h1>
-    <p class="slogan">Trouvez un maximum de mots en 3 minutes !</p>
+  <div class="onglets">
+    <a class="onglet<?= $vue === 'connexion' ? ' actif' : '' ?>" href="?vue=connexion">Connexion</a>
+    <a class="onglet<?= $vue === 'inscription' ? ' actif' : '' ?>" href="?vue=inscription">Créer un compte</a>
+  </div>
 
-    <div class="grille-demo" aria-hidden="true">
-      <?php foreach ($lettres as $i => $l): ?>
-        <div class="de<?= in_array($i, $chemin, true) ? ' surligne' : '' ?>"><?= $l ?></div>
-      <?php endforeach; ?>
-    </div>
+  <?php if ($erreur): ?><p class="message erreur"><?= e($erreur) ?></p><?php endif; ?>
+  <?php if ($succes): ?><p class="message succes"><?= e($succes) ?></p><?php endif; ?>
+  <?php if ($lienDev): ?>
+    <p class="message dev">🛠️ Mode démo : <a href="<?= e($lienDev) ?>">réinitialiser le mot de passe</a></p>
+  <?php endif; ?>
 
-    <ul class="regles">
-      <li>🎲 16 dés mélangés dans une grille 4×4</li>
-      <li>🔗 Reliez des lettres voisines pour former des mots</li>
-      <li>⏱️ 3 minutes pour marquer un maximum de points</li>
-      <li>🏆 Affrontez vos amis et grimpez au classement</li>
-    </ul>
-  </section>
+  <?php if ($vue === 'connexion'): ?>
+    <form method="post" class="formulaire">
+      <?= csrf_champ() ?>
+      <input type="hidden" name="action" value="connexion">
+      <label>Pseudo ou e-mail
+        <input type="text" name="identifiant" required autocomplete="username" value="<?= e(post('identifiant')) ?>">
+      </label>
+      <label>Mot de passe
+        <input type="password" name="mdp" required autocomplete="current-password">
+      </label>
+      <button class="btn">Se connecter</button>
+      <a href="?vue=recuperation" class="lien">Mot de passe oublié ?</a>
+    </form>
 
-  <main class="carte">
-    <div class="onglets">
-      <a class="onglet<?= $vue === 'connexion' ? ' actif' : '' ?>" href="?vue=connexion">Connexion</a>
-      <a class="onglet<?= $vue === 'inscription' ? ' actif' : '' ?>" href="?vue=inscription">Créer un compte</a>
-    </div>
+  <?php elseif ($vue === 'inscription'): ?>
+    <form method="post" class="formulaire">
+      <?= csrf_champ() ?>
+      <input type="hidden" name="action" value="inscription">
+      <label>Pseudo
+        <input type="text" name="pseudo" required minlength="3" maxlength="30" pattern="[a-zA-Z0-9_\-]{3,30}"
+               autocomplete="username" value="<?= e(post('pseudo')) ?>">
+      </label>
+      <label>E-mail
+        <input type="email" name="email" required autocomplete="email" value="<?= e(post('email')) ?>">
+      </label>
+      <label>Mot de passe <small>(8 caractères min., lettre + chiffre)</small>
+        <input type="password" name="mdp" required minlength="8" maxlength="72" autocomplete="new-password">
+      </label>
+      <label>Confirmer le mot de passe
+        <input type="password" name="mdp2" required autocomplete="new-password">
+      </label>
+      <button class="btn">Créer mon compte</button>
+    </form>
 
-    <?php if ($erreur): ?><p class="message erreur"><?= e($erreur) ?></p><?php endif; ?>
-    <?php if ($succes): ?><p class="message succes"><?= e($succes) ?></p><?php endif; ?>
-    <?php if ($lienDev): ?>
-      <p class="message dev">🛠️ Mode démo : <a href="<?= e($lienDev) ?>">réinitialiser le mot de passe</a></p>
-    <?php endif; ?>
-
-    <?php if ($vue === 'connexion'): ?>
-      <form method="post" class="formulaire">
-        <?= csrf_champ() ?>
-        <input type="hidden" name="action" value="connexion">
-        <label>Pseudo ou e-mail
-          <input type="text" name="identifiant" required autocomplete="username" value="<?= e(post('identifiant')) ?>">
-        </label>
-        <label>Mot de passe
-          <input type="password" name="mdp" required autocomplete="current-password">
-        </label>
-        <button class="btn">Se connecter</button>
-        <a href="?vue=recuperation" class="lien">Mot de passe oublié ?</a>
-      </form>
-
-    <?php elseif ($vue === 'inscription'): ?>
-      <form method="post" class="formulaire">
-        <?= csrf_champ() ?>
-        <input type="hidden" name="action" value="inscription">
-        <label>Pseudo
-          <input type="text" name="pseudo" required minlength="3" maxlength="30" pattern="[a-zA-Z0-9_\-]{3,30}"
-                 autocomplete="username" value="<?= e(post('pseudo')) ?>">
-        </label>
-        <label>E-mail
-          <input type="email" name="email" required autocomplete="email" value="<?= e(post('email')) ?>">
-        </label>
-        <label>Mot de passe <small>(8 caractères min., lettre + chiffre)</small>
-          <input type="password" name="mdp" required minlength="8" maxlength="72" autocomplete="new-password">
-        </label>
-        <label>Confirmer le mot de passe
-          <input type="password" name="mdp2" required autocomplete="new-password">
-        </label>
-        <button class="btn">Créer mon compte</button>
-      </form>
-
-    <?php else: ?>
-      <form method="post" class="formulaire">
-        <?= csrf_champ() ?>
-        <input type="hidden" name="action" value="recuperation">
-        <h2 class="titre">Mot de passe oublié</h2>
-        <p class="info">Entrez l'e-mail de votre compte, nous vous enverrons un lien valable 1 heure.</p>
-        <label>E-mail
-          <input type="email" name="email" required autocomplete="email">
-        </label>
-        <button class="btn">Envoyer le lien</button>
-        <a href="?vue=connexion" class="lien">← Retour à la connexion</a>
-      </form>
-    <?php endif; ?>
-  </main>
-
-</div>
+  <?php else: ?>
+    <form method="post" class="formulaire">
+      <?= csrf_champ() ?>
+      <input type="hidden" name="action" value="recuperation">
+      <h2 class="titre">Mot de passe oublié</h2>
+      <label>E-mail
+        <input type="email" name="email" required autocomplete="email">
+      </label>
+      <button class="btn">Envoyer le lien</button>
+      <a href="?vue=connexion" class="lien">← Retour à la connexion</a>
+    </form>
+  <?php endif; ?>
+</main>
 </body>
 </html>
