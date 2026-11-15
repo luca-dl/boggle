@@ -167,15 +167,15 @@ int grid_find_path(const Grille* g,const char* mot,int chemin[],int* longueur_ch
         return 0;
     }
 
+    /* Initie la grille */
     int nb_cases = g->lignes * g->colonnes;
     int* utilisees = calloc((size_t)nb_cases, sizeof(int));
-
     if (utilisees == NULL) {
         return 0;
     }
-
     *longueur_chemin = 0;
 
+    /* Cherche tout les mots possibles*/
     for (int i = 0; i < nb_cases; i++) {
         if (find_word(g,mot,0,i,utilisees,chemin, 0,longueur_chemin)) {
             free(utilisees);
